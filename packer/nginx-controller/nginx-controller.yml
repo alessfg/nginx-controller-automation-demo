@@ -1,0 +1,22 @@
+---
+- name: Set up NGINX Controller prerequisites
+  hosts: all
+  become: true
+  tasks:
+    - name: Disable swapoff
+      command: swapoff -a
+      changed_when: false
+    - name: Disable swapoff permanently
+      replace:
+        path: /etc/fstab
+        regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
+        replace: '#\1\2\3swap\4'
+        backup: yes
+    - name: Install NGINX Controller prerequisites
+      apt:
+        name: "{{ item }}"
+        update_cache: yes
+      loop:
+        - conntrack
+        - jq
+        - socat

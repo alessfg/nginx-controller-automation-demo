@@ -1,0 +1,29 @@
+- name: Install the NGINX Controller agent
+  hosts: all
+  become: true
+  collections:
+    - nginxinc.nginx_controller
+  vars:
+    nginx_controller_fqdn: "{{ controller_fqdn }}"
+  tasks:
+    - name: Retrieve the NGINX Controller auth token
+      include_role:
+        name: nginx_controller_generate_token
+      vars:
+        nginx_controller_user_email: john.doe@f5.com
+        nginx_controller_user_password: password123
+    - name: Fetch the NGINX Controller API key for agent registration
+      uri:
+        url: "https://{{ controller_fqdn }}/api/v1/platform/global"
+        method: GET
+        return_content: yes
+        status_code: 200
+        validate_certs: false
+        headers:
+          Cookie: "{{ nginx_controller_auth_token }}"
+      register: ctrl_globals
+    - name: Install the NGINX Controller agent
+      include_role:
+        name: nginx_controller_agent
+      vars:
+        nginx_controller_api_key: "{{ ctrl_globals.json.currentStatus.agentSettings.apiKey }}"

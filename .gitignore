@@ -1,0 +1,28 @@
+# Any private crt and keys #
+############################
+*.crt
+*.key
+*~
+\#*
+
+# NGINX Controller related installation files #
+###############################################
+*controller-installer*
+
+# Terraform specific #
+######################
+.terraform
+*tfstate*
+*.tfvars
+
+# Ansible specific #
+####################
+*.retry
+
+# Log files #
+#############
+*.log
+
+# OS Specific #
+###############
+.DS_Store

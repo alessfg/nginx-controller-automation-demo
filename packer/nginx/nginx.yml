@@ -1,0 +1,12 @@
+---
+- name: Install NGINX
+  hosts: all
+  become: true
+  roles:
+    - role: nginxinc.nginx
+      vars:
+        nginx_type: plus
+        nginx_license: 
+          certificate: "{{ nginx_plus_certificate }}"
+          key: "{{ nginx_plus_key }}"
+        nginx_remove_license: false

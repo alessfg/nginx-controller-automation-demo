@@ -1,0 +1,4 @@
+---
+collections:
+  - name: nginxinc.nginx_controller
+    version: 3.7.5

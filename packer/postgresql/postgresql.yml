@@ -1,0 +1,39 @@
+---
+- name: Set up PostgreSQL server
+  hosts: all
+  become: true
+  pre_tasks:
+    - name: Add PostgreSQL signing key
+      apt_key:
+        url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    - name: Add PostgreSQL repository
+      apt_repository:
+        repo: deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main
+        update_cache: yes
+  roles:
+    - name: Install and configure PostgreSQL for NGINX Controller
+      role: geerlingguy.postgresql
+      vars:
+        postgresql_version: 12
+        postgresql_data_dir: /var/lib/postgresql/{{ postgresql_version }}/main
+        postgresql_bin_path: /usr/lib/postgresql/{{ postgresql_version }}/bin
+        postgresql_config_path: /etc/postgresql/{{ postgresql_version }}/main
+        postgresql_packages:
+          - postgresql-{{ postgresql_version }}
+          - postgresql-contrib-{{ postgresql_version }}
+          - libpq-dev
+        postgresql_users:
+          - name: naas
+            password: naas
+            role_attr_flags: CREATEDB
+        postgresql_databases:
+          - name: naas
+        postgresql_global_config_options:
+          - option: listen_addresses
+            value: "*"
+        postgresql_hba_entries:
+          - { type: local, database: all, user: postgres, auth_method: peer }
+          - { type: local, database: all, user: all, auth_method: peer }
+          - { type: host, database: all, user: all, address: '127.0.0.1/32', auth_method: md5 }
+          - { type: host, database: all, user: all, address: '::1/128', auth_method: md5 }
+          - { type: host, database: all, user: all, address: '0.0.0.0/0', auth_method: md5 }

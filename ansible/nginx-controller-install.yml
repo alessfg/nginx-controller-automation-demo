@@ -1,0 +1,42 @@
+- name: Set up NGINX Controller
+  hosts: all
+  collections:
+    - nginxinc.nginx_controller
+  tasks:
+    - name: Install NGINX Controller
+      include_role:
+        name: nginx_controller_install
+      vars:
+        nginx_controller_tarball: "{{ nginx_controller_tarball_location }}"
+        nginx_controller_remote_source: true
+        nginx_controller_install_path: /home/ubuntu
+        nginx_controller_fqdn: "{{ nginx_controller_fqdn }}"
+        nginx_controller_db_host: "{{ nginx_controller_db_host }}"
+        nginx_controller_db_user: naas
+        nginx_controller_db_password: naas
+        nginx_controller_db_enable_ssl: false
+        nginx_controller_tsdb_volume_type: local
+        nginx_controller_smtp_host: "{{ nginx_controller_smtp_host | default('localhost') }}"
+        nginx_controller_smtp_authentication: false
+        nginx_controller_smtp_use_tls: false
+        nginx_controller_noreply_address: noreply@f5.com
+        nginx_controller_organization_name: F5
+        nginx_controller_admin_firstname: John
+        nginx_controller_admin_lastname: Doe
+        nginx_controller_admin_email: john.doe@f5.com
+        nginx_controller_admin_password: password123
+        nginx_controller_self_signed_cert: true
+        nginx_controller_auto_install_docker: true
+    - name: Retrieve the NGINX Controller auth token
+      include_role:
+        name: nginx_controller_generate_token
+      vars:
+        nginx_controller_fqdn: localhost
+        nginx_controller_user_email: john.doe@f5.com
+        nginx_controller_user_password: password123
+    - name: License NGINX Controller
+      include_role:
+        name: nginx_controller_license
+      vars:
+        nginx_controller_fqdn: localhost
+        nginx_controller_license: "{{ lookup('file', nginx_controller_license_location) | b64encode }}"

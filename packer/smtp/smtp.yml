@@ -1,0 +1,28 @@
+---
+- name: Set up SMTP server
+  hosts: all
+  become: true
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+    - name: Install SMTP server
+      include_role:
+        name: geerlingguy.nodejs
+      vars:
+        nodejs_install_npm_user: ubuntu
+        nodejs_version: "12.x"
+        nodejs_npm_global_packages:
+          - name: maildev
+            version: 1.1.0
+    - name: Create cloud init SMTP script
+      blockinfile:
+        path: /var/lib/cloud/scripts/per-instance/smtp.sh
+        create: yes
+        block: |
+          #!/bin/sh
+          maildev -w 80 -s 25
+    - name: Make cloud init SMTP script executable
+      file:
+        path: /var/lib/cloud/scripts/per-instance/smtp.sh
+        mode: 0755

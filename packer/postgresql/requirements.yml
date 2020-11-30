@@ -1,0 +1,4 @@
+---
+roles:
+  - name: geerlingguy.postgresql
+    version: 3.0.0

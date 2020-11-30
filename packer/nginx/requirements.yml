@@ -1,0 +1,7 @@
+---
+collections:
+  - name: nginxinc.nginx_controller
+    version: 3.7.5
+roles:
+  - name: nginxinc.nginx
+    version: 0.18.1
