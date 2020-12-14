@@ -1,3 +1,4 @@
+---
 - name: Install the NGINX Controller agent
   hosts: all
   become: true
